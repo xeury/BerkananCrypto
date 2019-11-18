@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import CryptoKit
 
 public protocol PrivateKeyProvider {
   
@@ -35,4 +36,34 @@ public struct AnyPrivateKeyProvider: PrivateKeyProvider {
   public init(_ base: PrivateKeyProvider) {
     self.base = base
   }
+}
+
+extension P256.KeyAgreement.PrivateKey: PrivateKeyProvider {
+    
+    public var privateKeyType: PrivateKeyType {
+        return .p256
+    }
+    
+    public func signingPrivateKey() throws -> SigningPrivateKey {
+        throw CocoaError(.coderValueNotFound)
+    }
+    
+    public func keyAgreementPrivateKey() throws -> KeyAgreementPrivateKey {
+        return self
+    }
+}
+
+extension P256.Signing.PrivateKey: PrivateKeyProvider {
+    
+    public var privateKeyType: PrivateKeyType {
+        return .p256
+    }
+    
+    public func signingPrivateKey() throws -> SigningPrivateKey {
+        return self
+    }
+    
+    public func keyAgreementPrivateKey() throws -> KeyAgreementPrivateKey {
+        throw CocoaError(.coderValueNotFound)
+    }
 }
